@@ -92,12 +92,23 @@ Panel {
           foreground: root.contentForeground
           fontFamily: root.contentFontFamily
           iconComponent: Component {
-            OpticalGlyph {
-              // U+F030C (MDI keyboard), verified in JetBrainsMono Nerd Font.
-              text: "\uDB80\uDF0C"
-              fontFamily: root.contentFontFamily
-              fontSize: Style.font.display
-              color: root.contentForeground
+            // Fixed box: the keyboard glyph's tight bearings would otherwise
+            // put the title right up against it. PanelHero adds its own
+            // margin after this box.
+            Item {
+              width: Style.font.display + Style.space(10)
+              height: Style.font.display
+
+              OpticalGlyph {
+                anchors.verticalCenter: parent.verticalCenter
+                width: Style.font.display
+                height: Style.font.display
+                // U+F030C (MDI keyboard), verified in JetBrainsMono Nerd Font.
+                text: "\uDB80\uDF0C"
+                fontFamily: root.contentFontFamily
+                fontSize: Style.font.display
+                color: root.contentForeground
+              }
             }
           }
         }

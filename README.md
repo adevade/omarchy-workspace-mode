@@ -3,8 +3,8 @@
 Two 3-letter codes in the Omarchy bar for this monitor's workspace:
 the layout first, then the focused window state. A teaching widget
 for beginners — deliberately faded like an inactive workspace number.
-Display-only in the bar; hover each code for what it means, click
-either code for a cheat sheet of window-management shortcuts.
+The bar itself never changes state; hover each code for what it means,
+click either code for a cheat sheet of window-management shortcuts.
 
 ```
 DWD TIL   dwindle layout, normal tiled window

@@ -5,7 +5,7 @@ import qs.Ui
 
 // Workspace Mode: layout + focused-window codes for this monitor's workspace.
 // Layout: DWD / SCR. Window, top priority wins: FUL > MAX > TFS > PIN > FLT > TIL.
-// Two hover zones with their own teaching tooltips. Display-only.
+// Two hover zones with their own tooltips; click either for the shortcut cheat sheet.
 BarWidget {
   id: root
   moduleName: "io.github.adevade.workspace-mode"
