@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.adevade.workspace-mode",
+  "name": "Workspace Mode",
+  "version": "0.1.0",
+  "author": "adevade",
+  "license": "MIT",
+  "description": "Shows the workspace layout and focused window state for this monitor (e.g. DWD MAX).",
+  "kinds": ["bar-widget"],
+  "entryPoints": { "barWidget": "BarWidget.qml" },
+  "barWidget": {
+    "displayName": "Workspace Mode",
+    "description": "Workspace layout + focused window state for this monitor",
+    "category": "Compositor",
+    "allowMultiple": false,
+    "defaultSection": "left"
+  }
+}
