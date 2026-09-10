@@ -21,6 +21,14 @@ Panel {
   readonly property color contentForeground: bar ? bar.foreground : Color.foreground
   readonly property string contentFontFamily: bar ? bar.fontFamily : Style.font.family
 
+  // Live state for the hero meta, read off the host widget. Upper-cased by
+  // PanelHero, so the bar codes double as the meta text.
+  readonly property string statePhrase: {
+    if (!hostWidget || !hostWidget.layoutCode) return ""
+    var w = hostWidget.winCode || ""
+    return w === "" ? hostWidget.layoutCode : hostWidget.layoutCode + " " + w
+  }
+
   // [keys, what] rows. Stock Omarchy defaults.
   readonly property var rows: [
     ["Super + F", "Fullscreen"],
@@ -75,16 +83,23 @@ Panel {
       Column {
         id: content
         width: parent.width
-        spacing: Style.space(6)
+        spacing: Style.space(8)
 
-        Text {
-          textFormat: Text.PlainText
-          text: "WINDOW SHORTCUTS"
-          color: Qt.darker(root.contentForeground, 1.5)
-          font.family: root.contentFontFamily
-          font.pixelSize: Style.font.caption
-          font.letterSpacing: 1
-          font.bold: true
+        PanelHero {
+          width: parent.width
+          title: "Window Shortcuts"
+          meta: root.statePhrase
+          foreground: root.contentForeground
+          fontFamily: root.contentFontFamily
+          iconComponent: Component {
+            OpticalGlyph {
+              // U+F030C (MDI keyboard), verified in JetBrainsMono Nerd Font.
+              text: "\uDB80\uDF0C"
+              fontFamily: root.contentFontFamily
+              fontSize: Style.font.display
+              color: root.contentForeground
+            }
+          }
         }
 
         Repeater {

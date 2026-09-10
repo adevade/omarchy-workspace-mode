@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.adevade.workspace-mode",
   "name": "Workspace Mode",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "adevade",
   "license": "MIT",
   "description": "Shows the workspace layout and focused window state for this monitor (e.g. DWD MAX).",

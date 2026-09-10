@@ -24,6 +24,7 @@ BarWidget {
   readonly property string lastAddr: wsIpc.lastwindow ? String(wsIpc.lastwindow) : ""
   readonly property bool scrolling: wsIpc.tiledLayout ? String(wsIpc.tiledLayout).toLowerCase() !== "dwindle" : false
   readonly property string layoutCode: scrolling ? "SCR" : "DWD"
+  readonly property string layoutWord: scrolling ? "Scrolling" : "Dwindle"
 
   function normAddr(a) {
     var s = String(a || "").toLowerCase()
@@ -59,6 +60,15 @@ BarWidget {
     if (winIpc.pinned === true && winIpc.floating === true) return "PIN"
     if (winIpc.floating === true) return "FLT"
     return "TIL"
+  }
+
+  readonly property string winWord: {
+    if (winCode === "MAX") return "Maximized (full-width)"
+    if (winCode === "FUL") return "Fullscreen"
+    if (winCode === "TFS") return "Tiled fullscreen"
+    if (winCode === "FLT") return "Floating"
+    if (winCode === "PIN") return "Popped out (pinned)"
+    return "Tiled"
   }
 
   readonly property bool hasWindow: winCode !== ""
