@@ -3,8 +3,8 @@
 Two 3-letter codes in the Omarchy bar for this monitor's workspace:
 the layout first, then the focused window state. A teaching widget
 for beginners — deliberately faded like an inactive workspace number.
-Display-only; hover each code for what it means and the shortcut that
-changes it.
+Display-only in the bar; hover each code for what it means, click
+either code for a cheat sheet of window-management shortcuts.
 
 ```
 DWD TIL   dwindle layout, normal tiled window
@@ -30,8 +30,10 @@ omarchy plugin add https://github.com/adevade/omarchy-workspace-mode.git --enabl
 
 ## Usage
 
-Hover the layout code for the layout shortcut, hover the window code
-for the window shortcut. Clicks do nothing by design.
+Hover the layout code for the layout name, hover the window code for
+the window state. Click either code to open the shortcut cheat sheet
+(Esc or a second click closes it). The shortcuts are Omarchy's stock
+defaults — if you've remapped keys, `Super + K` shows your live ones.
 
 Move it anywhere on the bar:
 

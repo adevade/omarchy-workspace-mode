@@ -61,17 +61,6 @@ BarWidget {
     return "TIL"
   }
 
-  // ---- Display strings ----
-  readonly property string layoutTip: (scrolling ? "Scrolling" : "Dwindle") + " layout\nSuper+L to toggle"
-  readonly property string winTip: {
-    if (winCode === "MAX") return "Maximized (full-width)\nSuper+Alt+F to toggle"
-    if (winCode === "FUL") return "Fullscreen\nSuper+F to toggle"
-    if (winCode === "TFS") return "Tiled fullscreen\nSuper+Ctrl+F to toggle"
-    if (winCode === "FLT") return "Floating\nSuper+T to toggle"
-    if (winCode === "PIN") return "Popped out (pinned)\nSuper+O to toggle"
-    return "Tiled\nSuper+Alt+F full-width · Super+T float"
-  }
-
   readonly property bool hasWindow: winCode !== ""
 
   // ---- Refresh ----
@@ -105,8 +94,59 @@ BarWidget {
 
   Component.onCompleted: root.refreshIpc()
 
+  // ---- Cheat-sheet panel. Shape contract for shell.summon/hide/toggle
+  //      routing: Bar.findPanelWidget requires open/close/opened on the
+  //      bar-widget root.
+  readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
+
+  function open() {
+    if (panelLoader.item) panelLoader.item.open()
+  }
+
+  function close() {
+    if (panelLoader.item) panelLoader.item.close()
+  }
+
+  function toggle() {
+    if (panelLoader.item) panelLoader.item.toggle()
+  }
+
+  // Forwarded so this widget can stand in for the panel as the bar's popout
+  // identity: Bar.requestPopout prefers closeForPopoutSwitch over close, and
+  // KeyboardPanel reads popoutSwitchClosing back off its owner.
+  readonly property bool popoutSwitchClosing: panelLoader.item ? panelLoader.item.popoutSwitchClosing === true : false
+
+  function closeForPopoutSwitch() {
+    if (panelLoader.item) panelLoader.item.closeForPopoutSwitch()
+  }
+
+  function injectPanel() {
+    var target = panelLoader.item
+    if (!target) return
+    if ("bar" in target) target.bar = root.bar
+    if ("anchorItem" in target) target.anchorItem = grid
+    if ("hostWidget" in target) target.hostWidget = root
+  }
+
+  function togglePanel(button) {
+    if (button === Qt.LeftButton) root.toggle()
+  }
+
   implicitWidth: grid.implicitWidth
   implicitHeight: grid.implicitHeight
+
+  onBarChanged: injectPanel()
+
+  Loader {
+    id: panelLoader
+    active: true
+    source: Qt.resolvedUrl("Panel.qml")
+    visible: false
+    onLoaded: {
+      root.injectPanel()
+      Qt.callLater(root.injectPanel)
+    }
+  }
 
   Grid {
     id: grid
@@ -117,8 +157,8 @@ BarWidget {
     WidgetButton {
       bar: root.bar
       text: root.layoutCode
-      tooltipText: root.layoutTip
-      pressable: false
+      tooltipText: root.layoutWord + " layout"
+      onPressed: function(button) { root.togglePanel(button) }
     }
 
     // No `visible` override: empty text already auto-hides the button via
@@ -126,8 +166,8 @@ BarWidget {
     WidgetButton {
       bar: root.bar
       text: root.winCode
-      tooltipText: root.winTip
-      pressable: false
+      tooltipText: root.winWord
+      onPressed: function(button) { root.togglePanel(button) }
     }
   }
 }
