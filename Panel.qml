@@ -24,9 +24,9 @@ Panel {
   // Live state for the hero meta, read off the host widget. Upper-cased by
   // PanelHero, so the bar codes double as the meta text.
   readonly property string statePhrase: {
-    if (!hostWidget || !hostWidget.layoutCode) return ""
-    var w = hostWidget.winCode || ""
-    return w === "" ? hostWidget.layoutCode : hostWidget.layoutCode + " " + w
+    if (!hostWidget || !hostWidget.layout) return ""
+    var w = hostWidget.win && hostWidget.win.code ? hostWidget.win.code : ""
+    return w === "" ? hostWidget.layout.code : hostWidget.layout.code + " " + w
   }
 
   // [keys, what] rows. Stock Omarchy defaults.

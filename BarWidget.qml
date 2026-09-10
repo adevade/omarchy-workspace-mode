@@ -2,9 +2,11 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import qs.Ui
+import "Model.js" as Model
 
 // Workspace Mode: layout + focused-window codes for this monitor's workspace.
-// Layout: DWD / SCR. Window, top priority wins: FUL > MAX > TFS > PIN > FLT > TIL.
+// The vocabulary (codes, words, priority) lives in Model.js; this file only
+// wires Hyprland objects to it and paints the results.
 // Two hover zones with their own tooltips; click either for the shortcut cheat sheet.
 BarWidget {
   id: root
@@ -22,56 +24,12 @@ BarWidget {
 
   readonly property var wsIpc: ws && ws.lastIpcObject ? ws.lastIpcObject : ({})
   readonly property string lastAddr: wsIpc.lastwindow ? String(wsIpc.lastwindow) : ""
-  readonly property bool scrolling: wsIpc.tiledLayout ? String(wsIpc.tiledLayout).toLowerCase() !== "dwindle" : false
-  readonly property string layoutCode: scrolling ? "SCR" : "DWD"
-  readonly property string layoutWord: scrolling ? "Scrolling" : "Dwindle"
 
-  function normAddr(a) {
-    var s = String(a || "").toLowerCase()
-    return s.indexOf("0x") === 0 ? s.slice(2) : s
-  }
-
-  // ---- Focused window on this workspace ----
-  // The activated toplevel, else the workspace's lastwindow matched by address.
-  readonly property var focusedTop: {
-    if (!ws || !ws.toplevels || !ws.toplevels.values) return null
-    var list = ws.toplevels.values
-    var fallback = null
-    var want = normAddr(lastAddr)
-    for (var i = 0; i < list.length; i++) {
-      var t = list[i]
-      if (!t) continue
-      if (t.activated === true) return t
-      if (want !== "" && normAddr(t.address) === want) fallback = t
-    }
-    return fallback
-  }
-
-  readonly property var winIpc: focusedTop && focusedTop.lastIpcObject ? focusedTop.lastIpcObject : null
-
-  // ponytail: Hyprland IPC (0.56.2) exposes no pseudo flag, so Super+P state stays invisible.
-  readonly property string winCode: {
-    if (!focusedTop || !winIpc) return ""
-    var fs = Number(winIpc.fullscreen || 0)
-    var fc = Number(winIpc.fullscreenClient || 0)
-    if (fs >= 2) return "FUL"
-    if (fs === 1) return "MAX"
-    if (fc === 2) return "TFS"
-    if (winIpc.pinned === true && winIpc.floating === true) return "PIN"
-    if (winIpc.floating === true) return "FLT"
-    return "TIL"
-  }
-
-  readonly property string winWord: {
-    if (winCode === "MAX") return "Maximized (full-width)"
-    if (winCode === "FUL") return "Fullscreen"
-    if (winCode === "TFS") return "Tiled fullscreen"
-    if (winCode === "FLT") return "Floating"
-    if (winCode === "PIN") return "Popped out (pinned)"
-    return "Tiled"
-  }
-
-  readonly property bool hasWindow: winCode !== ""
+  // ---- State, via Model.js ----
+  readonly property var layout: Model.layoutState(wsIpc.tiledLayout)
+  readonly property var focusedTop: Model.pickFocusedWindow(ws, lastAddr)
+  readonly property var win: Model.windowState(focusedTop && focusedTop.lastIpcObject ? focusedTop.lastIpcObject : null)
+  readonly property bool hasWindow: win.code !== ""
 
   // ---- Refresh ----
   // lastIpcObject only refreshes on explicit refresh; poke it on every
@@ -166,8 +124,8 @@ BarWidget {
 
     WidgetButton {
       bar: root.bar
-      text: root.layoutCode
-      tooltipText: root.layoutWord + " layout"
+      text: root.layout.code
+      tooltipText: root.layout.word + " layout"
       onPressed: function(button) { root.togglePanel(button) }
     }
 
@@ -175,8 +133,8 @@ BarWidget {
     // WidgetButton.hasVisualContent, which is exactly the empty-workspace case.
     WidgetButton {
       bar: root.bar
-      text: root.winCode
-      tooltipText: root.winWord
+      text: root.win.code
+      tooltipText: root.win.word
       onPressed: function(button) { root.togglePanel(button) }
     }
   }
